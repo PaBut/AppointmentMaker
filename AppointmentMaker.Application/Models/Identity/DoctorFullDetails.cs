@@ -9,4 +9,5 @@ public class DoctorFullDetails : BaseUserDetails
     public string About { get; set; } = string.Empty;
     public FileModelDto Photo { get; set; }
     public int PatientsCount { get; set; }
+    public Guid ScheduleId { get; set; }
 }

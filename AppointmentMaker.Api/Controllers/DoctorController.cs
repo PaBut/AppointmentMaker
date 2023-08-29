@@ -9,10 +9,12 @@ namespace AppointmentMaker.Api.Controllers;
 public class DoctorController : ApplicationBaseController
 {
     private readonly IAuthDoctorService _authService;
+    private readonly IDoctorService _doctorService;
 
-    public DoctorController(IAuthDoctorService authService)
+    public DoctorController(IAuthDoctorService authService, IDoctorService doctorService)
     {
         _authService = authService;
+        _doctorService = doctorService;
     }
 
     [HttpPost("register")]
@@ -32,6 +34,18 @@ public class DoctorController : ApplicationBaseController
     public async Task<ActionResult<AuthenticationResponse>> Login(LoginRequest request)
     {
         var result = await _authService.Login(request);
+        if (result.IsFailure)
+        {
+            return Problem(title: result.Error.Code, detail: result.Error.Message);
+        }
+        return result.Value;
+    }
+
+    [HttpGet("{id:guid}")]
+    [Authorize]
+    public async Task<ActionResult<DoctorFullDetails>> GetProfile(string id)
+    {
+        var result = await _doctorService.GetFullDetails(id);
         if (result.IsFailure)
         {
             return Problem(title: result.Error.Code, detail: result.Error.Message);

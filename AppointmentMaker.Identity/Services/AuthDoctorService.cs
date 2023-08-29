@@ -105,6 +105,7 @@ public class AuthDoctorService : AuthService<Doctor, DoctorRegisterRequest>, IAu
 
         return new AuthenticationResponse
         {
+            Id = user.Id,
             Email = user.Email!,
             UserName = user.UserName!,
             Role = RolesEnum.Doctor.ToString(),

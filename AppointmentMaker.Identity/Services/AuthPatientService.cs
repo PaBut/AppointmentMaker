@@ -37,6 +37,7 @@ public class AuthPatientService : AuthService<Patient, PatientRegisterRequest>, 
 
         return new AuthenticationResponse
         {
+            Id = user.Id,
             Email = user.Email!,
             UserName = user.UserName!,
             Role = RolesEnum.Patient.ToString(),
