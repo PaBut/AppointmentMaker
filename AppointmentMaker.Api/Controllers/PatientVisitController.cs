@@ -4,6 +4,7 @@ using AppointmentMaker.Application.Features.PatientVisit.Commands.Update;
 using AppointmentMaker.Application.Features.PatientVisit.Queries.GetVisitDetails;
 using AppointmentMaker.Application.Features.PatientVisit.Queries.GetVisits;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AppointmentMaker.Api.Controllers;
@@ -19,6 +20,7 @@ public class PatientVisitController : ApplicationBaseController
     }
 
     [HttpPost]
+    [Authorize(Roles = "Doctor")]
     public async Task<ActionResult> Post(PatientVisitCreateCommand command)
     {
         var result = await _mediator.Send(command);
@@ -32,6 +34,7 @@ public class PatientVisitController : ApplicationBaseController
     }
 
     [HttpDelete("{id}")]
+    [Authorize(Roles = "Doctor")]
     public async Task<ActionResult> Delete([FromQuery] Guid id)
     {
         var result = await _mediator.Send(new PatientVisitDeleteCommand(id));
@@ -45,6 +48,7 @@ public class PatientVisitController : ApplicationBaseController
     }
 
     [HttpPut("{id}")]
+    [Authorize(Roles = "Doctor")]
     public async Task<ActionResult> Put(PatientVisitUpdateCommand command)
     {
         var result = await _mediator.Send(command);
@@ -58,6 +62,7 @@ public class PatientVisitController : ApplicationBaseController
     }
 
     [HttpGet("{id}")]
+    [Authorize]
     public async Task<ActionResult<PatientVisitDetailsDto>> Get(Guid id)
     {
         var result = await _mediator.Send(new PatientVisitGetVisitDetailsQuery(id));
@@ -71,6 +76,7 @@ public class PatientVisitController : ApplicationBaseController
     }
 
     [HttpGet]
+    [Authorize]
     public async Task<ActionResult<List<PatientVisitDto>>> Get(string patientId)
     {
         var result = await _mediator.Send(new PatientVisitGetVisitsQuery(patientId));

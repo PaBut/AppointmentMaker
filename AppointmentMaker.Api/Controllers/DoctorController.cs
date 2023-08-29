@@ -1,5 +1,6 @@
 ﻿using AppointmentMaker.Application.Models.Identity;
 using AppointmentMaker.Application.ServiceContracts;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AppointmentMaker.Api.Controllers;
@@ -15,6 +16,7 @@ public class DoctorController : ApplicationBaseController
     }
 
     [HttpPost("register")]
+    [Authorize(Policy = "AllowAnonymousOnly")]
     public async Task<ActionResult<AuthenticationResponse>> Register(DoctorRegisterRequest request)
     {
         var result = await _authService.Register(request);
@@ -26,6 +28,7 @@ public class DoctorController : ApplicationBaseController
     }
 
     [HttpPost("login")]
+    [Authorize(Policy = "AllowAnonymousOnly")]
     public async Task<ActionResult<AuthenticationResponse>> Login(LoginRequest request)
     {
         var result = await _authService.Login(request);

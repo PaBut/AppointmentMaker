@@ -4,6 +4,7 @@ using AppointmentMaker.Application.Features.FileModel.Commands.RegisterCreate;
 using AppointmentMaker.Application.Features.FileModel.Commands.Update;
 using AppointmentMaker.Application.Features.FileModel.Queries.Get;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -20,6 +21,7 @@ public class ProfilePictureController : ApplicationBaseController
     }
 
     [HttpDelete("{id:guid}")]
+    [Authorize(Roles = "Doctor")]
     public async Task<ActionResult> Delete(Guid id)
     {
         var result = await _mediator.Send(new FileModelDeleteCommand(id));
@@ -33,6 +35,7 @@ public class ProfilePictureController : ApplicationBaseController
     }
 
     [HttpPost]
+    [Authorize(Roles = "Doctor")]
     public async Task<ActionResult> Post(FileModelRegisterCreateCommand command)
     {
         var result = await _mediator.Send(command);
@@ -46,6 +49,7 @@ public class ProfilePictureController : ApplicationBaseController
     }
 
     [HttpPut("{id:guid}")]
+    [Authorize(Roles = "Doctor")]
     public async Task<ActionResult> Put(FileModelUpdateCommand command)
     {
         var result = await _mediator.Send(command);
@@ -59,6 +63,7 @@ public class ProfilePictureController : ApplicationBaseController
     }
 
     [HttpGet("{id:guid}")]
+    [Authorize]
     public async Task<ActionResult> Get(Guid id)
     {
         var result = await _mediator.Send(new GetFileModelQuery(id));

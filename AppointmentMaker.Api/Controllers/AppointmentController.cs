@@ -4,6 +4,7 @@ using AppointmentMaker.Application.Features.Appointement.Commands.Delete;
 using AppointmentMaker.Application.Features.Appointement.Queries.GetDetails;
 using AppointmentMaker.Application.Features.Appointement.Queries.GetDoctorAppointments;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AppointmentMaker.Api.Controllers;
@@ -19,6 +20,7 @@ public class AppointmentController : ApplicationBaseController
     }
 
     [HttpPost("/cancel/{id:guid}")]
+    [Authorize(Roles = "Patient")]
     public async Task<ActionResult> Cancel([FromQuery]Guid id)
     {
         var result = await _mediator.Send(new AppointmentCancelCommand(id));
@@ -32,6 +34,7 @@ public class AppointmentController : ApplicationBaseController
     }
 
     [HttpPost]
+    [Authorize(Roles = "Patient")]
     public async Task<ActionResult> Post(AppointmentCreateCommand command)
     {
         var result = await _mediator.Send(command);
@@ -45,6 +48,7 @@ public class AppointmentController : ApplicationBaseController
     }
 
     [HttpDelete("{id:guid}")]
+    [Authorize]
     public async Task<ActionResult> Delete([FromQuery]Guid id)
     {
         var result = await _mediator.Send(new AppointmentDeleteCommand(id));
@@ -60,6 +64,7 @@ public class AppointmentController : ApplicationBaseController
     //TODO: add Put request
 
     [HttpGet("{id:guid}")]
+    [Authorize]
     public async Task<ActionResult<AppointmentDetailsDto>> Get(Guid id)
     {
         var result = await _mediator.Send(new AppointmentGetDetailsQuery(id));
@@ -73,6 +78,7 @@ public class AppointmentController : ApplicationBaseController
     }
 
     [HttpGet]
+    [Authorize]
     public async Task<ActionResult<AppointmentGetByDoctorResponse>> Get
         (string doctorId, int pageSize, DateTime? cursor = null, DateOnly? date = null)
     {

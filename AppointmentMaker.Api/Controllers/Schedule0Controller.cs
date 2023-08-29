@@ -2,6 +2,7 @@
 using AppointmentMaker.Application.Features.Schedule.Queries.GetFreeDays;
 using AppointmentMaker.Application.Features.Schedule.Queries.GetFreeTimeSlots;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AppointmentMaker.Api.Controllers;
@@ -17,6 +18,7 @@ public class Schedule0Controller : ApplicationBaseController
     }
 
     [HttpDelete("{id:guid}")]
+    [Authorize]
     public async Task<ActionResult> Delete(Guid id)
     {
         var result = await _mediator.Send(new ScheduleDeleteCommand(id));
@@ -30,6 +32,7 @@ public class Schedule0Controller : ApplicationBaseController
     }
 
     [HttpGet("{id:guid}/freedays")]
+    [Authorize]
     public async Task<ActionResult<List<int>>> GetFreeDays(ScheduleGetFreeDaysQuery query)
     {
         var result = await _mediator.Send(query);
@@ -43,6 +46,7 @@ public class Schedule0Controller : ApplicationBaseController
     }
 
     [HttpGet("{id:guid}/freetimeslots")]
+    [Authorize]
     public async Task<ActionResult<List<TimeOnly>>> GetFreeTimeSlots(ScheduleGetFreeTimeSlotsQuery query)
     {
         var result = await _mediator.Send(query);

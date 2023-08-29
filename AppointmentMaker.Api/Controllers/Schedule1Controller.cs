@@ -2,12 +2,14 @@
 using AppointmentMaker.Application.Features.Schedule.Commands.UpdateTemplateDay.WithBoolArray;
 using AppointmentMaker.Application.Features.Schedule.Commands.UpdateTemplateWeek.WithBoolArray;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AppointmentMaker.Api.Controllers;
 
 [ApiVersion("1.0")]
+[Authorize(Roles = "Doctor")]
 public class Schedule1Controller : ApplicationBaseController
 {
     private readonly IMediator _mediator;

@@ -54,6 +54,14 @@ public static class DependencyInjection
             };
         });
 
+        services.AddAuthorization(options =>
+        {
+            options.AddPolicy("AllowAnonymousOnly", policyBuilder =>
+            {
+                policyBuilder.RequireAssertion(context => !context.User.Identity!.IsAuthenticated);
+            });
+        });
+
         services.AddScoped<IAuthPatientService, AuthPatientService>();
         services.AddScoped<IAuthDoctorService, AuthDoctorService>();
         services.AddScoped<IPatientService, PatientService>();
