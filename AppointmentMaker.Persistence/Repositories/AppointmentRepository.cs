@@ -1,5 +1,5 @@
 ﻿using AppointmentMaker.Domain.Entities;
-using AppointmentMaker.Domain.Extentions;
+using AppointmentMaker.Domain.Extensions;
 using AppointmentMaker.Domain.RepositoryContracts;
 using AppointmentMaker.Persistence.DatabaseContext;
 using Microsoft.EntityFrameworkCore;

@@ -33,7 +33,7 @@ public class ScheduleGetFreeDaysQueryHandler : IResultRequestHandler<ScheduleGet
 
         if (schedule == null)
         {
-            return Result.Failure<List<int>>(new Error("Schedule.Get", "Schedule wiith specified id not found"));
+            return Result.Failure<List<int>>(Error.NotFound(nameof(Domain.Entities.Schedule)));
         }
 
         int startIndex = _scheduleConfiguration.GetMonthIndex((int)query.Month, query.Year);

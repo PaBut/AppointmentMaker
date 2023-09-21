@@ -26,7 +26,7 @@ public class ScheduleDeleteCommandHandler : IResultRequestHandler<ScheduleDelete
 
         if (schedule == null)
         {
-            return Result.Failure(new Error("Schedule.Delete", "Schedule with specified id not found"));
+            return Result.Failure(Error.NotFound(nameof(Domain.Entities.Schedule)));
         }
 
         await _scheduleRepository.DeleteAsync(schedule);

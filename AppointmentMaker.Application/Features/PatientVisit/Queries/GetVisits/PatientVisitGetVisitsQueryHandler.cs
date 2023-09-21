@@ -35,8 +35,7 @@ public class PatientVisitGetVisitsQueryHandler : IResultRequestHandler<PatientVi
 
         if (!patientHistory.Any())
         {
-            return Result.Failure<List<PatientVisitDto>>(new Error("PatientVisit.Get",
-                "Patient visits of the specified patient not found"));
+            return Result.Failure<List<PatientVisitDto>>(Error.NotFound("Patient Visit"));
         }
 
         List<PatientVisitDto> result = _mapper.Map<List<PatientVisitDto>>(patientHistory);

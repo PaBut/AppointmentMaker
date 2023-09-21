@@ -1,6 +1,8 @@
 ﻿using AppointmentMaker.Application.Features.FileModel.Commands.RegisterCreate;
 using AppointmentMaker.Application.Features.Schedule.Commands.Create.WithBoolArray;
-using AppointmentMaker.Application.Models.Identity;
+using AppointmentMaker.Application.Features.Schedule.Commands.Create.WithTimeIntervals;
+using AppointmentMaker.Application.Models.Identity.Authentication;
+using AppointmentMaker.Application.Models.Identity.Authentication.Base;
 using AppointmentMaker.Application.ServiceContracts;
 using AppointmentMaker.Domain.Configuration;
 using AppointmentMaker.Domain.Shared;
@@ -15,30 +17,28 @@ using Microsoft.Extensions.Options;
 
 namespace AppointmentMaker.Identity.Services;
 
-public class AuthDoctorService : AuthService<Doctor, DoctorRegisterRequest>, IAuthDoctorService
+public sealed class AuthDoctorService : AuthService<Doctor, BaseDoctorRegisterRequest>, IAuthDoctorService
 {
-    private readonly ScheduleConfiguration _scheduleConfiguration;
     private readonly IMediator _mediator;
     private readonly IUnitOfWork _unitOfWork;
 
     public AuthDoctorService(SignInManager<Doctor> signInManager,
-        IHttpContextAccessor httpContextAccessor,
         UserManager<Doctor> userManager,
         IOptions<JwtSettings> jwtSettingsOptions,
-        IOptions<ScheduleConfiguration> scheduleConfigurationOptions,
         IDoctorService userService,
         IMapper mapper,
         IMediator mediator,
         IUnitOfWork unitOfWork)
-        : base(signInManager, httpContextAccessor, userManager,
+        : base(signInManager, userManager,
             jwtSettingsOptions, userService, mapper)
     {
-        _scheduleConfiguration = scheduleConfigurationOptions.Value;
         _mediator = mediator;
         _unitOfWork = unitOfWork;
     }
 
-    public async Task<Result<AuthenticationResponse>> Register(DoctorRegisterRequest request)
+    public async Task<Result<AuthenticationResponse>> Register<TRegisterRequest>
+        (TRegisterRequest request)
+        where TRegisterRequest: BaseDoctorRegisterRequest
     {
         //if (!await _userService.IsEmailAvailable(request.Email))
         //{
@@ -76,7 +76,11 @@ public class AuthDoctorService : AuthService<Doctor, DoctorRegisterRequest>, IAu
 
         Doctor user = userResult.Value;
 
-        var createScheduleResult = await _mediator.Send(new ScheduleCreateWithBoolArrayCommand(request.ScheduleTemplate, user.Id));
+        var createScheduleResult = typeof(TRegisterRequest) == typeof(DoctorRegisterWithBoolArrayRequest) 
+            ? await _mediator.Send(new ScheduleCreateWithBoolArrayCommand(
+                (request as DoctorRegisterWithBoolArrayRequest)!.ScheduleTemplate, user.Id))
+            : await _mediator.Send(new ScheduleCreateWithTimeIntervalsCommand(
+                (request as DoctorRegisterWithTimeIntervalsRequest)!.ScheduleTemplate, user.Id));
 
         if (createScheduleResult.IsFailure)
         {

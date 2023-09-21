@@ -2,8 +2,6 @@
 using AppointmentMaker.Application.ServiceContracts;
 using AppointmentMaker.Domain.RepositoryContracts;
 using AppointmentMaker.Domain.Shared;
-using MediatR;
-using Microsoft.AspNetCore.Http;
 
 namespace AppointmentMaker.Application.Features.FileModel.Commands.Delete;
 
@@ -25,7 +23,7 @@ public class FileModelDeleteCommandHandler : IResultRequestHandler<FileModelDele
 
         if(fileModel == null)
         {
-            return Result.Failure(new Error("FileModel.Delete", "File with specified id not found"));
+            return Result.Failure(Error.NotFound("File"));
         }
 
         await _fileModelRepository.DeleteAsync(fileModel);

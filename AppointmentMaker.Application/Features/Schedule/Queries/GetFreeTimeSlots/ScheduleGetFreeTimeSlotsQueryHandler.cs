@@ -6,7 +6,8 @@ using Microsoft.Extensions.Options;
 
 namespace AppointmentMaker.Application.Features.Schedule.Queries.GetFreeTimeSlots;
 
-public class ScheduleGetFreeTimeSlotsQueryHandler : IResultRequestHandler<ScheduleGetFreeTimeSlotsQuery, List<TimeOnly>>
+public class ScheduleGetFreeTimeSlotsQueryHandler 
+    : IResultRequestHandler<ScheduleGetFreeTimeSlotsQuery, List<TimeOnly>>
 {
     private readonly IScheduleRepository _scheduleRepository;
     private readonly ScheduleConfiguration _scheduleConfiguration;
@@ -18,13 +19,14 @@ public class ScheduleGetFreeTimeSlotsQueryHandler : IResultRequestHandler<Schedu
         _scheduleConfiguration = scheduleConfigurationOptions.Value;
     }
 
-    public async Task<Result<List<TimeOnly>>> Handle(ScheduleGetFreeTimeSlotsQuery query, CancellationToken cancellationToken)
+    public async Task<Result<List<TimeOnly>>> Handle
+        (ScheduleGetFreeTimeSlotsQuery query, CancellationToken cancellationToken)
     {
         var schedule = await _scheduleRepository.GetByIdAsync(query.Id);
 
         if (schedule == null)
         {
-            return Result.Failure<List<TimeOnly>>(new Error("Schedule.Get", "Schedule with specified id not found"));
+            return Result.Failure<List<TimeOnly>>(Error.NotFound(nameof(Domain.Entities.Schedule)));
         }
 
         int dayIndex = _scheduleConfiguration.GetMonthIndex(query.Date.Month, query.Date.Year) +
@@ -41,7 +43,8 @@ public class ScheduleGetFreeTimeSlotsQueryHandler : IResultRequestHandler<Schedu
             {
                 if (((schedule.ScheduleSlots[i + dayIndex] >> j) & 1) == 1)
                 {
-                    TimeSpan time = baseTime.Add(TimeSpan.FromMinutes(j * _scheduleConfiguration.VisitLengthInMinutes)); 
+                    TimeSpan time = baseTime.Add(TimeSpan.FromMinutes
+                        (j * _scheduleConfiguration.VisitLengthInMinutes)); 
                     if (!isToday || DateTime.UtcNow.TimeOfDay < time)
                     {
                         result.Add(TimeOnly.FromTimeSpan(time));

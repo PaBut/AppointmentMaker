@@ -1,6 +1,6 @@
 ﻿using AppointmentMaker.Application.Features.Shared;
 using AppointmentMaker.Application.ServiceContracts;
-using AppointmentMaker.Domain.Extentions;
+using AppointmentMaker.Domain.Extensions;
 using AppointmentMaker.Domain.RepositoryContracts;
 using AppointmentMaker.Domain.Shared;
 

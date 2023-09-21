@@ -12,18 +12,15 @@ namespace AppointmentMaker.Identity.Services;
 
 public class PatientService : UserService<Patient>, IPatientService
 {
-    private readonly IDoctorService _doctorService;
     private readonly IMapper _mapper;
     private readonly IPatientVisitRepository _patientVisitRepository;
 
     public PatientService(UserManager<Patient> userManager,
         IHttpContextAccessor httpContextAccessor,
-        IDoctorService doctorService,
         IMapper mapper,
         IPatientVisitRepository petVisitRepository)
         : base(userManager, httpContextAccessor)
     {
-        _doctorService = doctorService;
         _mapper = mapper;
         _patientVisitRepository = petVisitRepository;
     }
@@ -55,7 +52,7 @@ public class PatientService : UserService<Patient>, IPatientService
 
         if (patient == null)
         {
-            return Result.Failure<PatientDetails>(new Error("Patient.GetDetails", "Doctor with specified id not found"));
+            return Result.Failure<PatientDetails>(Error.NotFound(nameof(Patient)));
         }
 
         var patientDetails = _mapper.Map<PatientDetails>(patient);
@@ -69,7 +66,7 @@ public class PatientService : UserService<Patient>, IPatientService
 
         if (patient == null)
         {
-            return Result.Failure<PatientFullDetails>(new Error("Patient.GetFullDetails", "Doctor with specified id not found"));
+            return Result.Failure<PatientFullDetails>(Error.NotFound(nameof(Patient)));
         }
 
         var patientDetails = _mapper.Map<PatientFullDetails>(patient);
@@ -84,7 +81,7 @@ public class PatientService : UserService<Patient>, IPatientService
         string? id = await GetUserId();
         if(id == null)
         {
-            return Result.Failure(new Error("Patient.Update", "Unauthoried request"));
+            return Result.Failure(new Error("Error.UnAuthorized", "UnAuthorized request"));
         }
         
         var patient = await _userManager.FindByIdAsync(id);

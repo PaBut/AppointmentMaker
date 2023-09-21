@@ -1,4 +1,5 @@
 ﻿using AppointmentMaker.Application.Models.Identity;
+using AppointmentMaker.Application.Models.Identity.Authentication;
 using AppointmentMaker.Identity.Entities.Users;
 using AutoMapper;
 

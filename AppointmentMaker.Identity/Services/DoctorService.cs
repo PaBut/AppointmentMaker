@@ -1,6 +1,9 @@
-﻿using AppointmentMaker.Application.Models.Identity;
+﻿using AppointmentMaker.Application.Features.Appointment.Queries.GetDoctorAppointments;
+using AppointmentMaker.Application.Features.Shared;
+using AppointmentMaker.Application.Models.Identity;
 using AppointmentMaker.Application.ServiceContracts;
 using AppointmentMaker.Domain.Entities;
+using AppointmentMaker.Domain.Enums;
 using AppointmentMaker.Domain.Shared;
 using AppointmentMaker.Identity.Entities.Users;
 using AppointmentMaker.Identity.Services.Base;
@@ -30,12 +33,12 @@ public class DoctorService : UserService<Doctor>, IDoctorService
 
         if (doctor == null)
         {
-            return Result.Failure(new Error("Doctor.AssignToDoctor", "Patient with specified id not found"));
+            return Result.Failure(Error.NotFound(nameof(Patient)));
         }
 
         if (!await UserExists(patientId))
         {
-            return Result.Failure(new Error("Doctor.AssignToDoctor", "Doctor with specified id not found"));
+            return Result.Failure(Error.NotFound(nameof(Doctor)));
         }
 
         doctor.PatientsList.Add(new Patient { Id = patientId });
@@ -50,7 +53,7 @@ public class DoctorService : UserService<Doctor>, IDoctorService
 
         if (doctor == null)
         {
-            return Result.Failure(new Error("Doctor.AssignProfilePicture", "Doctor wth specified id not found"));
+            return Result.Failure(Error.NotFound(nameof(Doctor)));
         }
 
         doctor.PhotoId = photoId;
@@ -65,12 +68,49 @@ public class DoctorService : UserService<Doctor>, IDoctorService
 
         if (doctor == null)
         {
-            return Result.Failure<DoctorDetails>(new Error("Doctor.GetDetails", "Doctor with specified id not found"));
+            return Result.Failure<DoctorDetails>(Error.NotFound(nameof(Doctor)));
         }
 
         var doctorDetails = _mapper.Map<DoctorDetails>(doctor);
 
         return doctorDetails;
+    }
+
+    public async Task<Result<CursorResponse<DoctorDetails>>> GetDoctors
+        (int pageSize, string? cursor, DoctorSortBy? sortBy = null, string? lookBy = null) 
+    {
+        var doctorQuery = _userManager.Users;
+
+        if(lookBy != null)
+        {
+            doctorQuery = doctorQuery.Where(e => e.FullName.Contains(lookBy) 
+            || e.Email!.Contains(lookBy));
+        }
+
+        var doctors = await doctorQuery.AsNoTracking().ToListAsync();
+
+        (bool isAscending, string sortName) = sortBy switch
+        {
+            DoctorSortBy.NameAsc => (true, nameof(Doctor.FullName)),
+            DoctorSortBy.NameDesc => (false, nameof(Doctor.FullName)),
+            DoctorSortBy.RecentlyAdded => (true, nameof(Doctor.CreatedDate)),
+            DoctorSortBy.LatelyAdded => (false, nameof(Doctor.CreatedDate)),
+            _ => (true, nameof(Doctor.Id))
+        };
+
+        var result = CursorResponse<DoctorDetails>.GetCursorResponse(doctors,
+            pageSize,
+            cursor,
+            nameof(Doctor.FullName),
+            true,
+            _mapper);
+
+        if (result.IsFailure)
+        {
+            return Result.Failure<CursorResponse<DoctorDetails>>(result.Error);
+        }
+
+        return result.Value;
     }
 
     public async Task<Result<Schedule>> GetDoctorSchedule(string id)
@@ -120,6 +160,30 @@ public class DoctorService : UserService<Doctor>, IDoctorService
         doctorDetails.PatientsCount = doctor.PatientsList.Count();
 
         return doctorDetails;
+    }
+
+    public async Task<Result<CursorResponse<PatientDetails>>> GetPatients(string doctorId, int pageSize, string? cursor)
+    {
+        var doctor = await _userManager.FindByIdAsync(doctorId);
+
+        if(doctor == null)
+        {
+            return Result.Failure<CursorResponse<PatientDetails>>(new Error("", "Doctor with specified id not found"));
+        }
+
+        var result = CursorResponse<PatientDetails>.GetCursorResponse(doctor.PatientsList,
+            pageSize,
+            cursor,
+            nameof(Patient.Id),
+            true, 
+            _mapper);
+
+        if (result.IsFailure)
+        {
+            return Result.Failure<CursorResponse<PatientDetails>>(result.Error);
+        }
+
+        return result.Value;
     }
 
     public async Task<Result> Update(DoctorUpdateRequest request)

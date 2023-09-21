@@ -24,13 +24,13 @@ public class FileModelCreateCommandHandler : IResultRequestHandler<FileModelCrea
     {
         var formFile = command.FormFile;
         using var stream = new MemoryStream();
-        formFile.CopyTo(stream);
+        await formFile.CopyToAsync(stream, cancellationToken);
         byte[] data = stream.ToArray();
 
         var fileModel = new Domain.Entities.FileModel
         {
             Name = formFile.FileName,
-            Extention = formFile.ContentType,
+            Extension = formFile.ContentType,
             Content = data
         };
 

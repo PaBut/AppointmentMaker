@@ -2,7 +2,7 @@
 using AppointmentMaker.Application.ServiceContracts;
 using AppointmentMaker.Domain.Configuration;
 using AppointmentMaker.Domain.Entities;
-using AppointmentMaker.Domain.Extentions;
+using AppointmentMaker.Domain.Extensions;
 using AppointmentMaker.Domain.RepositoryContracts;
 using AppointmentMaker.Domain.Shared;
 using Microsoft.Extensions.Options;

@@ -1,7 +1,7 @@
 ﻿using AppointmentMaker.Domain.Configuration;
 using AppointmentMaker.Domain.Entities.Common;
 using AppointmentMaker.Domain.Shared;
-using AppointmentMaker.Domain.Extentions;
+using AppointmentMaker.Domain.Extensions;
 
 namespace AppointmentMaker.Domain.Entities;
 
@@ -28,7 +28,7 @@ public class Schedule : Entity
 
         if (((ScheduleSlots[index] >> (byte)offset) & 1) == 0 && occupy)
         {
-            return Result.Failure(new Error("Appointment.Create", "Time slot is already taken"));
+            return Result.Failure(new Error("Error.BadRequest", "Time slot is already taken"));
         }
 
         byte temp = (byte)(Convert.ToByte(occupy) << offset);

@@ -1,4 +1,4 @@
-﻿using AppointmentMaker.Application.Models.Identity;
+﻿using AppointmentMaker.Application.Models.Identity.Authentication;
 using AppointmentMaker.Application.ServiceContracts;
 using AppointmentMaker.Application.ServiceContracts.Base;
 using AppointmentMaker.Domain.Shared;
@@ -15,11 +15,10 @@ namespace AppointmentMaker.Identity.Services;
 public class AuthPatientService : AuthService<Patient, PatientRegisterRequest>, IAuthPatientService
 {
     public AuthPatientService(SignInManager<Patient> signInManager,
-        IHttpContextAccessor httpContextAccessor, 
         UserManager<Patient> userManager,
         IOptions<JwtSettings> jwtSettingsOptions,
         IPatientService userService, IMapper mapper) 
-        : base(signInManager, httpContextAccessor, userManager, 
+        : base(signInManager, userManager, 
             jwtSettingsOptions, userService, mapper)
     {
     }

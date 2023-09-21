@@ -25,7 +25,7 @@ public class GetFileModelQueryHandler
 
         if(fileModel == null)
         {
-            return Result.Failure<FileModelDto>(new Error("FileModel.Get", "File with specified id not found"));
+            return Result.Failure<FileModelDto>(Error.NotFound("File"));
         }
 
         var fileModelDto = _mapper.Map<FileModelDto>(fileModel);

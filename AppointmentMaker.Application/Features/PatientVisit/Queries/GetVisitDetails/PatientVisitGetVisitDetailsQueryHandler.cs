@@ -29,8 +29,7 @@ public class PatientVisitGetVisitDetailsQueryHandler
 
         if(patientVisit == null)
         {
-            return Result.Failure<PatientVisitDetailsDto>(new Error("PatientVisit.Get",
-                "Patient Visit with specified id not found"));
+            return Result.Failure<PatientVisitDetailsDto>(Error.NotFound("Patient Visit"));
         }
 
         var detailsDto = _mapper.Map<PatientVisitDetailsDto>(patientVisit);

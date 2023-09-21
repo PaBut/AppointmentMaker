@@ -36,7 +36,7 @@ public class PatientVisitCreateCommandHandler : IResultRequestHandler<PatientVis
 
         if (appointment == null)
         {
-            return Result.Failure<Guid>(new Error("PatientVisit.Create", "Appointment Not Found"));
+            return Result.Failure<Guid>(Error.NotFound(nameof(Domain.Entities.Appointment)));
         }
 
         appointment.Status = AppointmentStatus.Completed;

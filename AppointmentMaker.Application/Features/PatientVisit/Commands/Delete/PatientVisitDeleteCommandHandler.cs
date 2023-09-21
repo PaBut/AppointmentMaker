@@ -3,33 +3,32 @@ using AppointmentMaker.Application.ServiceContracts;
 using AppointmentMaker.Domain.RepositoryContracts;
 using AppointmentMaker.Domain.Shared;
 
-namespace AppointmentMaker.Application.Features.PatientVisit.Commands.Delete
+namespace AppointmentMaker.Application.Features.PatientVisit.Commands.Delete;
+
+public class PatientVisitDeleteCommandHandler : IResultRequestHandler<PatientVisitDeleteCommand>
 {
-    public class PatientVisitDeleteCommandHandler : IResultRequestHandler<PatientVisitDeleteCommand>
+    private readonly IPatientVisitRepository _patientVisitRepository;
+    private readonly IUnitOfWork _unitOfWork;
+
+    public PatientVisitDeleteCommandHandler(IPatientVisitRepository patientVisitRepository,
+        IUnitOfWork unitOfWork)
     {
-        private readonly IPatientVisitRepository _patientVisitRepository;
-        private readonly IUnitOfWork _unitOfWork;
+        _patientVisitRepository = patientVisitRepository;
+        _unitOfWork = unitOfWork;
+    }
 
-        public PatientVisitDeleteCommandHandler(IPatientVisitRepository patientVisitRepository,
-            IUnitOfWork unitOfWork)
+    public async Task<Result> Handle(PatientVisitDeleteCommand command, CancellationToken cancellationToken)
+    {
+        var patientVisit = await _patientVisitRepository.GetByIdAsync(command.Id);
+
+        if (patientVisit == null)
         {
-            _patientVisitRepository = patientVisitRepository;
-            _unitOfWork = unitOfWork;
+            return Result.Failure(Error.NotFound("Patient Visit"));
         }
 
-        public async Task<Result> Handle(PatientVisitDeleteCommand command, CancellationToken cancellationToken)
-        {
-            var patientVisit = await _patientVisitRepository.GetByIdAsync(command.Id);
+        await _patientVisitRepository.DeleteAsync(patientVisit);
+        await _unitOfWork.SaveChangesAsync();
 
-            if (patientVisit == null)
-            {
-                return Result.Failure(new Error("PatientVisit.Update", "Patient Visit not found"));
-            }
-
-            await _patientVisitRepository.DeleteAsync(patientVisit);
-            await _unitOfWork.SaveChangesAsync();
-
-            return Result.Success();
-        }
+        return Result.Success();
     }
 }

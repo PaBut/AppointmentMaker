@@ -23,16 +23,16 @@ public class FileModelUpdateCommandHandler : IResultRequestHandler<FileModelUpda
 
         if(fileModel == null)
         {
-            return Result.Failure(new Error("FileModel.Update", "File with specified id not found"));
+            return Result.Failure(Error.NotFound("File"));
         }
 
         var formFile = command.FormFile;
         using var stream = new MemoryStream();
-        formFile.CopyTo(stream);
+        await formFile.CopyToAsync(stream, cancellationToken);
         byte[] data = stream.ToArray();
 
         fileModel.Name = formFile.FileName;
-        fileModel.Extention = formFile.ContentType;
+        fileModel.Extension = formFile.ContentType;
         fileModel.Content = data;
 
         await _fileModelRepository.UpdateAsync(fileModel);

@@ -1,4 +1,4 @@
-﻿using AppointmentMaker.Application.Models.Identity;
+﻿using AppointmentMaker.Application.Models.Identity.Authentication;
 using AppointmentMaker.Application.ServiceContracts;
 using AppointmentMaker.Identity.DatabaseContext;
 using AppointmentMaker.Identity.Entities.Role;

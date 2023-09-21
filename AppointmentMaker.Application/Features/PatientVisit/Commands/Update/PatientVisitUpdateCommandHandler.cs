@@ -3,44 +3,43 @@ using AppointmentMaker.Application.ServiceContracts;
 using AppointmentMaker.Domain.RepositoryContracts;
 using AppointmentMaker.Domain.Shared;
 
-namespace AppointmentMaker.Application.Features.PatientVisit.Commands.Update
+namespace AppointmentMaker.Application.Features.PatientVisit.Commands.Update;
+
+public class PatientVisitUpdateCommandHandler : IResultRequestHandler<PatientVisitUpdateCommand>
 {
-    public class PatientVisitUpdateCommandHandler : IResultRequestHandler<PatientVisitUpdateCommand>
+    private readonly IPatientVisitRepository _patientVisitRepository;
+    private readonly IUnitOfWork _unitOfWork;
+
+    public PatientVisitUpdateCommandHandler(IPatientVisitRepository patientVisitRepository,
+        IUnitOfWork unitOfWork)
     {
-        private readonly IPatientVisitRepository _patientVisitRepository;
-        private readonly IUnitOfWork _unitOfWork;
+        _patientVisitRepository = patientVisitRepository;
+        _unitOfWork = unitOfWork;
+    }
 
-        public PatientVisitUpdateCommandHandler(IPatientVisitRepository patientVisitRepository,
-            IUnitOfWork unitOfWork)
+    public async Task<Result> Handle(PatientVisitUpdateCommand command, CancellationToken cancellationToken)
+    {
+        var validator = new PatientVisitUpdateCommandValidator();
+
+        var validationResult = await validator.ValidateAsync(command);
+
+        if (!validationResult.IsValid)
         {
-            _patientVisitRepository = patientVisitRepository;
-            _unitOfWork = unitOfWork;
+            return Result.Failure(Error.FromValidationResult(validationResult));
         }
 
-        public async Task<Result> Handle(PatientVisitUpdateCommand command, CancellationToken cancellationToken)
+        var patientVisit = await _patientVisitRepository.GetByIdAsync(command.Id);
+
+        if (patientVisit == null)
         {
-            var validator = new PatientVisitUpdateCommandValidator();
-
-            var validationResult = await validator.ValidateAsync(command);
-
-            if (!validationResult.IsValid)
-            {
-                return Result.Failure(Error.FromValidationResult(validationResult));
-            }
-
-            var patientVisit = await _patientVisitRepository.GetByIdAsync(command.Id);
-
-            if (patientVisit == null)
-            {
-                return Result.Failure(new Error("PatientVisit.Update", "Patient Visit not found"));
-            }
-
-            patientVisit.VisitResult = command.VisitResult;
-
-            await _patientVisitRepository.UpdateAsync(patientVisit);
-            await _unitOfWork.SaveChangesAsync();
-
-            return Result.Success();
+            return Result.Failure(Error.NotFound("Patient Visit"));
         }
+
+        patientVisit.VisitResult = command.VisitResult;
+
+        await _patientVisitRepository.UpdateAsync(patientVisit);
+        await _unitOfWork.SaveChangesAsync();
+
+        return Result.Success();
     }
 }

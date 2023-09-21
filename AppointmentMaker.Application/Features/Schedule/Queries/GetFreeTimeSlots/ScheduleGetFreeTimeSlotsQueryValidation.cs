@@ -8,7 +8,7 @@ public class ScheduleGetFreeTimeSlotsQueryValidation : AbstractValidator<Schedul
     {
         RuleFor(e => e.Date)
             .Must(MustBeInFuture)
-            .WithMessage("Date must be in future");
+            .WithMessage("Requested date must be in future");
     }
 
     private static bool MustBeInFuture(DateOnly date)

@@ -9,7 +9,7 @@ internal class FileModelConfiguration : IEntityTypeConfiguration<FileModel>
     public void Configure(EntityTypeBuilder<FileModel> builder)
     {
         builder.HasKey(f => f.Id);
-        builder.Property(f => f.Extention)
+        builder.Property(f => f.Extension)
             .HasMaxLength(10);
         builder.Property(f => f.Name)
             .HasMaxLength(100);

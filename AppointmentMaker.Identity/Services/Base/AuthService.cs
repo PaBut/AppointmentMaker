@@ -1,5 +1,5 @@
-﻿using AppointmentMaker.Application.Models.Identity;
-using AppointmentMaker.Application.Models.Identity.Base;
+﻿using AppointmentMaker.Application.Models.Identity.Authentication;
+using AppointmentMaker.Application.Models.Identity.Authentication.Base;
 using AppointmentMaker.Application.ServiceContracts.Base;
 using AppointmentMaker.Domain.Shared;
 using AppointmentMaker.Identity.Entities.Users;
@@ -22,20 +22,17 @@ public abstract class AuthService<TUser, TRegisterRequest> : IAuthService
 {
     protected readonly SignInManager<TUser> _signInManager;
     protected readonly UserManager<TUser> _userManager;
-    private readonly HttpContext _httpContext;
     private readonly JwtSettings _jwtSettings;
     private readonly IUserService _userService;
     private readonly IMapper _mapper;
 
     public AuthService(SignInManager<TUser> signInManager,
-        IHttpContextAccessor httpContextAccessor,
         UserManager<TUser> userManager,
         IOptions<JwtSettings> jwtSettingsOptions,
         IUserService userService,
         IMapper mapper)
     {
         _signInManager = signInManager;
-        _httpContext = httpContextAccessor.HttpContext!;
         _userManager = userManager;
         _jwtSettings = jwtSettingsOptions.Value;
         _userService = userService;
@@ -49,7 +46,7 @@ public abstract class AuthService<TUser, TRegisterRequest> : IAuthService
         if (user == null)
         {
             return Result.Failure<AuthenticationResponse>(
-                new Error("User.Login", "Not able to find user with proovided email"));
+                new Error("Error.NotFound", "User with specified email not found"));
         }
 
         var result = await _signInManager
@@ -72,7 +69,7 @@ public abstract class AuthService<TUser, TRegisterRequest> : IAuthService
         else
         {
             return Result.Failure<AuthenticationResponse>(
-                new Error("User.Login", "Email or password is not valid"));
+                new Error("Error.NotAuthorized", "Email or password is not valid"));
         }
     }
 
@@ -113,10 +110,11 @@ public abstract class AuthService<TUser, TRegisterRequest> : IAuthService
     {
         if (!await _userService.IsEmailAvailable(request.Email))
         {
-            return Result.Failure<TUser>(new Error("User.Register", "Email is already taken"));
+            return Result.Failure<TUser>(new Error("Error.BadRequest", "Email is already taken"));
         }
 
         TUser user = _mapper.Map<TUser>(request);
+        user.CreatedDate = DateTime.UtcNow;
 
         var createUserResult = await _userManager.CreateAsync(user, request.Password);
 
@@ -130,7 +128,7 @@ public abstract class AuthService<TUser, TRegisterRequest> : IAuthService
 
         if (!await _signInManager.CanSignInAsync(user))
         {
-            return Result.Failure<TUser>(new Error("User.Register", "Unexpected error"));
+            return Result.Failure<TUser>(new Error("Error.Unexpected", "Unexpected error"));
         }
 
         string role = "";

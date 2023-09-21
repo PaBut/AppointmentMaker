@@ -2,6 +2,6 @@
 
 public record FileModelDto
 {
-    public string Extention { get; set; } = string.Empty;
+    public string Extension { get; set; } = string.Empty;
     public byte[] Content { get; set; }
 }

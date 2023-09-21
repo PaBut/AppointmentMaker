@@ -1,5 +1,5 @@
-﻿using AppointmentMaker.Application.Features.Appointement.Queries.GetDetails;
-using AppointmentMaker.Application.Features.Appointement.Queries.GetDoctorAppointments;
+﻿using AppointmentMaker.Application.Features.Appointment.Queries.GetDetails;
+using AppointmentMaker.Application.Features.Appointment.Queries.GetDoctorAppointments;
 using AppointmentMaker.Domain.Entities;
 using AutoMapper;
 

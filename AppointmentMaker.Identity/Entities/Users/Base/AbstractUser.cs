@@ -7,4 +7,5 @@ public abstract class AbstractUser : IdentityUser
 {
     public string FullName { get; set; } = string.Empty;
     public DateTime Birthday { get; set; }
+    public DateTime CreatedDate { get; set; }
 }

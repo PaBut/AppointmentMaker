@@ -9,28 +9,25 @@ public class FileModelRegisterCreateCommandHandler : IResultRequestHandler<FileM
 {
     private readonly IFileModelRepository _fileModelRepository;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IDoctorService _doctorService;
 
     public FileModelRegisterCreateCommandHandler(IUnitOfWork unitOfWork,
-        IFileModelRepository fileModelRepository,
-        IDoctorService doctorService)
+        IFileModelRepository fileModelRepository)
     {
         _unitOfWork = unitOfWork;
         _fileModelRepository = fileModelRepository;
-        _doctorService = doctorService;
     }
 
     public async Task<Result<Guid>> Handle(FileModelRegisterCreateCommand command, CancellationToken cancellationToken)
     {
         var formFile = command.FormFile;
         using var stream = new MemoryStream();
-        formFile.CopyTo(stream);
+        await formFile.CopyToAsync(stream, cancellationToken);
         byte[] data = stream.ToArray();
 
         var fileModel = new Domain.Entities.FileModel
         {
             Name = formFile.FileName,
-            Extention = formFile.ContentType,
+            Extension = formFile.ContentType,
             Content = data
         };
 

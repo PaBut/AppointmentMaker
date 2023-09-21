@@ -306,13 +306,13 @@ namespace AppointmentMaker.Identity.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "b3af00d0-048a-4985-bdec-f11770d44d95",
+                            Id = "8da2b8f0-6074-418a-811f-3dd794ed2081",
                             Name = "Doctor",
                             NormalizedName = "DOCTOR"
                         },
                         new
                         {
-                            Id = "3583abd8-e2d8-4bc7-bb1b-9dd5ab3adefc",
+                            Id = "f93f78cb-5970-4278-9e04-608f12908ccc",
                             Name = "Patient",
                             NormalizedName = "PATIENT"
                         });
@@ -323,6 +323,9 @@ namespace AppointmentMaker.Identity.Migrations
                     b.HasBaseType("Microsoft.AspNetCore.Identity.IdentityUser");
 
                     b.Property<DateTime>("Birthday")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("FullName")
@@ -351,7 +354,7 @@ namespace AppointmentMaker.Identity.Migrations
                     b.Property<Guid?>("PhotoId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("ScheduleId")
+                    b.Property<Guid?>("ScheduleId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasIndex("PhotoId");
@@ -432,9 +435,7 @@ namespace AppointmentMaker.Identity.Migrations
 
                     b.HasOne("AppointmentMaker.Domain.Entities.Schedule", "Schedule")
                         .WithMany()
-                        .HasForeignKey("ScheduleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("ScheduleId");
 
                     b.Navigation("Photo");
 

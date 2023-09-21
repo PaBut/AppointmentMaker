@@ -1,4 +1,5 @@
-﻿using AppointmentMaker.Domain.Entities.Common;
+﻿using System.Net;
+using AppointmentMaker.Domain.Entities.Common;
 using AppointmentMaker.Domain.Enums;
 using AppointmentMaker.Domain.Shared;
 
@@ -19,12 +20,12 @@ public class Appointment : Entity
     {
         if (DateTime < DateTime.UtcNow || Status == AppointmentStatus.Completed)
         {
-            return Result.Failure(new Error("Appointment.Cancel", "Cannot cancel completed appointment"));
+            return Result.Failure(new Error("Error.BadRequest", "Cannot cancel completed appointment"));
         }
 
         if (Status == AppointmentStatus.Cancelled)
         {
-            return Result.Failure(new Error("Appointment.Cancel", "Cannot cancel cancelled appointment"));
+            return Result.Failure(new Error("Error.BadRequest", "Cannot cancel cancelled appointment"));
         }
 
         Status = AppointmentStatus.Cancelled;

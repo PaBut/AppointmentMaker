@@ -1,4 +1,4 @@
-﻿using AppointmentMaker.Application.Models.Identity;
+﻿using AppointmentMaker.Application.Models.Identity.Authentication;
 using AppointmentMaker.Domain.Shared;
 
 namespace AppointmentMaker.Application.ServiceContracts.Base;

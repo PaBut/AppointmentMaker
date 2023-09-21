@@ -18,7 +18,8 @@ public class PatientVisitGetVisitsQueryValidator : AbstractValidator<PatientVisi
 
         RuleFor(e => e.PatientId)
             .MustAsync(PatientExists)
-            .WithMessage("Patient with specified id does not exist");
+            .WithMessage("Patient with specified id does not exist")
+            .WithErrorCode("Error.NotFound");
     }
 
     private async Task<bool> PatientExists(string id, CancellationToken token)

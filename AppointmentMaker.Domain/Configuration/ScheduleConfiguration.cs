@@ -1,5 +1,5 @@
 ﻿using AppointmentMaker.Domain.Enums;
-using AppointmentMaker.Domain.Extentions;
+using AppointmentMaker.Domain.Extensions;
 using AppointmentMaker.Domain.Models;
 
 namespace AppointmentMaker.Domain.Configuration;

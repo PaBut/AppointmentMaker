@@ -1,4 +1,5 @@
 ﻿using AppointmentMaker.Domain.Entities;
+using AppointmentMaker.Domain.Entities.Common;
 using Microsoft.EntityFrameworkCore;
 
 namespace AppointmentMaker.Persistence.DatabaseContext;
@@ -19,5 +20,21 @@ public class ApplicationDbContext : DbContext
     {
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
         base.OnModelCreating(modelBuilder);
+    }
+
+    public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+    {
+        foreach(var entry in base.ChangeTracker.Entries<Entity>()
+            .Where(e => e.State == EntityState.Added || e.State == EntityState.Modified))
+        {
+            entry.Entity.ModifiedDate = DateTime.UtcNow;
+            
+            if(entry.State == EntityState.Added)
+            {
+                entry.Entity.CreatedDate = DateTime.UtcNow;
+            }
+        }
+
+        return base.SaveChangesAsync(cancellationToken);
     }
 }
